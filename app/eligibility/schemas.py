@@ -1,0 +1,1 @@
+"""Eligibility schemas placeholder."""\n\n# TODO: Define inbound payload and dropdown response schemas here.\n

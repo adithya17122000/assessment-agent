@@ -1,0 +1,1 @@
+"""Assessment management capability placeholder."""\n

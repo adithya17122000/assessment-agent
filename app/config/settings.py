@@ -1,0 +1,1 @@
+"""Application settings placeholder."""\n\n# TODO: Define environment-based settings and configuration values here.\n

@@ -1,0 +1,1 @@
+"""Database configuration placeholder."""\n\n# TODO: Configure SQLAlchemy engine and session dependencies here.\n

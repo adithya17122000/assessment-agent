@@ -1,0 +1,1 @@
+"""Result routes placeholder."""\n\n# TODO: Add dashboard-facing result endpoints here.\n

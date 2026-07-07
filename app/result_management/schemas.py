@@ -1,0 +1,1 @@
+"""Result management schemas placeholder."""\n\n# TODO: Define dashboard-facing result response schemas here.\n

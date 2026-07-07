@@ -1,0 +1,1 @@
+"""Question generation service placeholder."""\n\n# TODO: Implement prompt construction and question generation orchestration here.\n

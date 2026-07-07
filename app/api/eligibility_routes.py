@@ -1,0 +1,1 @@
+"""Eligibility routes placeholder."""\n\n# TODO: Add Team 3 POST/PATCH and dropdown GET endpoints here.\n
