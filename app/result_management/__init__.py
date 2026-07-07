@@ -1,0 +1,1 @@
+"""Result management capability placeholder."""\n

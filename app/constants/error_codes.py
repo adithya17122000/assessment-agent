@@ -1,0 +1,1 @@
+"""Error code constants placeholder."""\n\n# TODO: Define reusable error code constants here.\n

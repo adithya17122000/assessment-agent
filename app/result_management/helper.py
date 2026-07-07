@@ -1,0 +1,1 @@
+"""Result management helper placeholder."""\n\n# TODO: Implement read-only query helpers here.\n
