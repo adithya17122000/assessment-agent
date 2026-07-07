@@ -1,1 +1,5 @@
-# Add Python dependencies here.\n
+sqlalchemy
+psycopg2-binary
+python-dotenv
+fastapi
+alembic
