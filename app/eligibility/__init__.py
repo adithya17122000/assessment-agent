@@ -1,1 +1,0 @@
-"""Eligibility capability placeholder."""\n
