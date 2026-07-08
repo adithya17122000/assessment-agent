@@ -1,4 +1,3 @@
-# create_tables.py  (place at repo root, outside app/)
 from app.config.database import Base, engine
 
 # Import every model so Base.metadata knows about all six tables.
