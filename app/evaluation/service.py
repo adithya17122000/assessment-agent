@@ -1,11 +1,21 @@
-# app/evaluation/service.py — updated
+# app/evaluation/service.py — final combined version
 import uuid
 from sqlalchemy.orm import Session
 
+from app.evaluation import helper
 from app.evaluation.models import Evaluation, Response
 from app.evaluation.helper import is_answer_correct
+from app.evaluation.schemas import BulkResponseSubmission
 from app.question_generation.models import Question
 from app.config.settings import PASS_THRESHOLD_PERCENT
+
+
+def submit_and_evaluate(db: Session, payload: BulkResponseSubmission) -> Evaluation:
+    # Step 1: bulk insert raw responses
+    helper.bulk_insert_responses(db, payload.assessment_id, payload.answers)
+
+    # Step 2: score immediately, same request
+    return evaluate_assessment(db, payload.assessment_id)
 
 
 def evaluate_assessment(db: Session, assessment_id: str) -> Evaluation:
