@@ -19,8 +19,8 @@ class Evaluation(Base):
     __tablename__ = "evaluation"
 
     id = Column(String, primary_key=True)
-    assessment_id = Column(String, ForeignKey("assessment.id"), nullable=False, index=True)
+    assessment_id = Column(String, nullable=False, index=True)
     score = Column(Integer, nullable=True)
     total_questions = Column(Integer, nullable=False)
     pass_fail_status = Column(String, nullable=True)
-    evaluated_at = Column(DateTime(timezone=True), nullable=True)
+    evaluated_at = Column(DateTime(timezone=True), server_default=func.now())

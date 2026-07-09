@@ -15,7 +15,7 @@ class AssessmentEligibility(Base):
     course_id = Column(String, nullable=False, index=True)
     course_name = Column(String, nullable=False)
     module_name = Column(String, nullable=True)
-    module_id = Column(String, nullable=True
+    module_id = Column(String, nullable=True)
     topics = Column(JSONB, nullable=False)
     difficulty = Column(String, nullable=False)
     completion_date = Column(Date, nullable=False)
