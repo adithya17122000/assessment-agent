@@ -13,6 +13,12 @@ class AssessmentEligibilityCreate(BaseModel):
     difficulty: str
     completion_date: date
 
+class CourseEligibilitySummary(BaseModel):
+    course_id: str
+    course_name: str
+    union_topics: List[str]
+    latest_topics: List[str]
+    latest_completion_date: str
 
 class AssessmentEligibilityResponse(BaseModel):
     id: str
