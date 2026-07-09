@@ -45,3 +45,68 @@ Routes live centrally under `app/api/`.
 
 - `Assessment.Status` only supports `In Progress` / `Completed` — no distinct failure state for generation errors.
 - No ownership/auth check on result or assessment lookups by ID. as there is dependency
+
+# Setup Instructions
+
+## 1. Prerequisites
+
+- Python 3.11+
+- PostgreSQL installed and running(Only for prod , not for demo)
+- An OpenAI-compatible LLM API endpoint and key
+
+## 2. Clone and install dependencies
+
+\`\`\`bash
+pip install -r requirements.txt
+\`\`\`
+
+## 3. Create the database(optional for demo as we are using supabase)
+
+\`\`\`bash
+psql -U your_username -h localhost -p 5432 -c "CREATE DATABASE assessment_db;"
+\`\`\`
+
+## 4. Configure environment variables
+
+Create a `.env` file in the project root:
+
+\`\`\`
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=assessment_db
+
+AI_API_URL=your_llm_endpoint
+AI_API_KEY=your_llm_api_key
+MODEL=your_model_name
+
+PASS_THRESHOLD_PERCENT=60
+\`\`\`
+
+## 5. Create all tables
+
+\`\`\`bash
+python create_tables.py
+\`\`\`
+
+Expected output: a printed list of all six table names (`assessment_eligibility`, `assessment_request`, `assessment`, `question`, `response`, `evaluation`). Verify directly in Postgres if needed:
+
+\`\`\`sql
+\dt
+\`\`\`
+
+## 6. Run the service
+
+\`\`\`bash
+uvicorn app.main:app --reload
+\`\`\`
+
+## 7. Verify
+
+Open `http://localhost:8000/docs` — confirm all routers are listed (Eligibility, Assessment Management, Question Generation, Evaluation, Result Management, Take Assessment orchestration).
+
+## Notes
+
+- Tables are created via `create_tables.py` (`Base.metadata.create_all`) — there is no migration tool in place. Any future schema change to an existing table with real data requires a manual `ALTER` or a drop-and-recreate; there is no automated migration path yet.
+- If you change a model's column type on a table that already has data, `create_tables.py` will **not** apply that change automatically — it only creates tables that don't yet exist.
