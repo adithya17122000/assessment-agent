@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
+from app.question_generation.schemas import QuestionForFrontend
 
 
 class TakeAssessmentRequest(BaseModel):
@@ -44,3 +45,8 @@ class AssessmentResponse(BaseModel):
 class TakeAssessmentResponse(BaseModel):
     assessment_request: AssessmentRequestResponse
     assessment: AssessmentResponse
+
+
+class TakeAssessmentAndQuestionsResponse(BaseModel):
+    assessment_id: str
+    questions: List[QuestionForFrontend]
