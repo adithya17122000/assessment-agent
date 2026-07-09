@@ -27,9 +27,9 @@ FastAPI microservice owning the complete Assessment & Quiz lifecycle: eligibilit
 ## Repository Structure
 
 See `app/` — 
-organized by business capability (`eligibility/`, `assessment_management/`, `question_generation/`, `evaluation/`, `result_management/`),not technical layer. 
-Each capability folder holds its own `models.py`, `schemas.py`, and service/helper logic. 
-Routes live centrally under `app/api/`.
+- organized by business capability (`eligibility/`, `assessment_management/`, `question_generation/`, `evaluation/`, `result_management/`),not technical layer. 
+- Each capability folder holds its own `models.py`, `schemas.py`, and service/helper logic. 
+- Routes live centrally under `app/api/`.
 
 ## Key Design Decisions
 
@@ -71,17 +71,17 @@ psql -U your_username -h localhost -p 5432 -c "CREATE DATABASE assessment_db;"
 Create a `.env` file in the project root:
 
 \`\`\`
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=assessment_db
+- DB_HOST=localhost
+- DB_PORT=5432
+- DB_USER=your_username
+- DB_PASSWORD=your_password
+- DB_NAME=assessment_db
 
-AI_API_URL=your_llm_endpoint
-AI_API_KEY=your_llm_api_key
-MODEL=your_model_name
+- AI_API_URL=your_llm_endpoint
+- AI_API_KEY=your_llm_api_key
+- MODEL=your_model_name
 
-PASS_THRESHOLD_PERCENT=60
+- PASS_THRESHOLD_PERCENT=60
 \`\`\`
 
 ## 5. Create all tables
