@@ -1,6 +1,7 @@
 # app/evaluation/service.py — final combined version
 import uuid
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from app.evaluation import helper
 from app.evaluation.models import Evaluation, Response
@@ -8,6 +9,7 @@ from app.evaluation.helper import is_answer_correct
 from app.evaluation.schemas import BulkResponseSubmission
 from app.question_generation.models import Question
 from app.config.settings import PASS_THRESHOLD_PERCENT
+from app.assessment_management.models import Assessment
 
 
 def submit_and_evaluate(db: Session, payload: BulkResponseSubmission) -> Evaluation:
@@ -18,12 +20,13 @@ def submit_and_evaluate(db: Session, payload: BulkResponseSubmission) -> Evaluat
     return evaluate_assessment(db, payload.assessment_id)
 
 
+# app/evaluation/service.py — add Assessment status update
+
 def evaluate_assessment(db: Session, assessment_id: str) -> Evaluation:
     responses = db.query(Response).filter(Response.assessment_id == assessment_id).all()
     questions = db.query(Question).filter(Question.assessment_id == assessment_id).all()
 
     question_lookup = {q.id: q for q in questions}
-
     total_questions = len(questions)
     correct_count = 0
 
@@ -45,6 +48,13 @@ def evaluate_assessment(db: Session, assessment_id: str) -> Evaluation:
         pass_fail_status=pass_fail_status,
     )
     db.add(evaluation)
+
+    # Close the status gap: mark the Assessment complete now that scoring is done.
+    assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
+    if assessment:
+        assessment.status = "Completed"
+        assessment.submitted_at = func.now()
+
     db.commit()
     db.refresh(evaluation)
     return evaluation
