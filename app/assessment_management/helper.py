@@ -9,7 +9,7 @@ from app.assessment_management.schemas import TakeAssessmentRequest
 def create_assessment_request(db: Session, payload: TakeAssessmentRequest) -> AssessmentRequest:
     record = AssessmentRequest(
         id=f"req-{uuid.uuid4().hex[:8]}",
-        employee_id=payload.employee_id,
+        user_id=payload.user_id,
         course_id=payload.course_id,
         course_name=payload.course_name,
         module_id=payload.module_id,

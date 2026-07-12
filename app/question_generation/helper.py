@@ -18,35 +18,27 @@ def get_questions_by_assessment(db: Session, assessment_id: str):
 
 def build_question_prompt(course_name: str, difficulty: str, topics: list[str], question_count: int = 10) -> str:
     topics_str = ", ".join(topics)
-    return f"""
-            Generate {question_count} {difficulty.lower()} level multiple-choice questions on {course_name}, covering the topics: {topics_str}.
-
-            Return ONLY a JSON array, no other text, in this exact format.
-
-            You can include:
-            - Multiple-choice questions with options.
-            - Boolean questions with True/False.
-            - Question which can have multiple correct answers. In this case, the "correct_answer" field should contain all correct answers.
-            - The "options" field must be a dictionary with keys a, b, c, d. if its boolean, then the options keys should be a,b
-            - The "correct_answer" field must be a list containing all correct answers.
-            - Do not deviate from the provided topics.
-            - Do not include any code snippets in the questions or answers.
-            - Do not include explanations, markdown, code snippets, or special characters such as `, *, or \\n.
-            - Make sure the JSON is valid and parsable.
-
-            [
-            {{
-                "question": "...",
-                "options": {{
-                "a": "...",
-                "b": "...",
-                "c": "...",
-                "d": "..."
-                }},
-                "correct_answer": ["..."]
-            }}
-            ]
-            """
+    return (
+        f"Generate {question_count} {difficulty.lower()} level questions "
+        f"on {course_name}, covering the topics: {topics_str}.\n\n"
+        f"You can include:\n"
+        f"- Multiple-choice questions with 4 options.\n"
+        f"- Boolean questions with True/False (2 options).\n"
+        f"- Questions with multiple correct answers, where 'correct_answer' contains all correct values.\n\n"
+        f"Return ONLY a JSON array, no other text, in this exact format:\n"
+        f'[\n'
+        f'  {{"question": "...", "topic": "...", "options": {{"a": "...", "b": "...", "c": "...", "d": "..."}}, "correct_answer": ["..."]}},\n'
+        f'  {{"question": "...", "topic": "...", "options": {{"a": "True", "b": "False"}}, "correct_answer": ["..."]}}\n'
+        f']\n\n'
+        f"Rules:\n"
+        f"- The 'topic' field must be exactly one of the provided topics: {topics_str}.\n"
+        f"- The 'options' field must be a dictionary with keys a, b, c, d for MCQ, or a, b for boolean.\n"
+        f"- The 'correct_answer' field must always be a list, even for single-answer questions.\n"
+        f"- Do not deviate from the provided topics.\n"
+        f"- Do not include code snippets, markdown, explanations, or special characters such as `, *, or \\n.\n"
+        f"- Do not include any text outside the JSON array.\n"
+        f"- Ensure the JSON is valid and parsable."
+    )
 
 def parse_llm_response(raw_response: str) -> List[dict]:
     cleaned = raw_response.strip()
@@ -63,7 +55,7 @@ def parse_llm_response(raw_response: str) -> List[dict]:
         raise QuestionParseError("Expected a JSON array of questions.")
 
     for i, q in enumerate(parsed):
-        if not all(k in q for k in ("question", "options", "correct_answer")):
+        if not all(k in q for k in ("question", "topic", "options", "correct_answer")):
             raise QuestionParseError(f"Question at index {i} missing required fields.")
         if not isinstance(q["options"], dict):
             raise QuestionParseError(f"Question at index {i}: options must be a dict, got {type(q['options'])}")
@@ -73,23 +65,20 @@ def parse_llm_response(raw_response: str) -> List[dict]:
     return parsed
 
 if __name__ == "__main__":
-    # Example usage
     prompt = build_question_prompt("Python Programming", "Intermediate", ["Functions", "Loops"], 10)
-    # print(prompt)
-    # print("*"*40)
     from app.question_generation.helper import parse_llm_response
     from app.question_generation.llm_client import call_llm
+    import ipdb;ipdb.set_trace(context=15)
     raw_response = call_llm(prompt)
     print(raw_response)
+
     try:
         parsed_questions = parse_llm_response(raw_response)
         for q in parsed_questions:
             print(q.get("question"))
+            print(q.get("topic"))
             print(q.get("options"))
             print(q.get("correct_answer"))
-            print("-"*20)
+            print("-" * 20)
     except Exception as e:
-        import ipdb; ipdb.set_trace()
-        parsed_questions = parse_llm_response(raw_response)
-
         print(f"Error parsing LLM response: {e}")

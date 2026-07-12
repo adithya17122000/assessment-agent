@@ -10,7 +10,7 @@ class AssessmentRequest(Base):
     __tablename__ = "assessment_request"
 
     id = Column(String, primary_key=True)
-    employee_id = Column(String, nullable=False, index=True)
+    user_id = Column(String, nullable=False, index=True)
     course_id = Column(String, nullable=False, index=True)
     course_name = Column(String, nullable=False)
     module_id = Column(String, nullable=True)

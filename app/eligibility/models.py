@@ -10,7 +10,7 @@ class AssessmentEligibility(Base):
     __tablename__ = "assessment_eligibility"
 
     id = Column(String, primary_key=True)
-    employee_id = Column(String, nullable=False, index=True)
+    user_id = Column(String, nullable=False, index=True)
     employee_name = Column(String, nullable=True)
     course_id = Column(String, nullable=False, index=True)
     course_name = Column(String, nullable=False)

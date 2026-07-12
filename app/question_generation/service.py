@@ -25,7 +25,6 @@ def get_generation_context(db: Session, assessment_id: str) -> AssessmentRequest
 
 
 def generate_questions_for_assessment(db: Session, assessment_id: str, question_count: int = 10) -> list[Question]:
-    
     existing = db.query(Question).filter(Question.assessment_id == assessment_id).all()
     if existing:
         return existing
@@ -50,6 +49,7 @@ def generate_questions_for_assessment(db: Session, assessment_id: str, question_
             sequence_number=i,
             question_text=q["question"],
             question_type="MCQ",
+            topic=q["topic"],
             options=q["options"],
             correct_answer=q["correct_answer"],
         )

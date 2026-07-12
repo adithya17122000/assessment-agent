@@ -16,10 +16,11 @@ def create_eligibility(payload: AssessmentEligibilityCreate, db: Session = Depen
     return service.record_eligibility(db, payload)
 
 
-@router.get("/{employee_id}", response_model=List[AssessmentEligibilityResponse])
-def get_eligibility_dropdown(employee_id: str, db: Session = Depends(get_db)):
-    return service.get_dropdown_options(db, employee_id)
+@router.get("/{user_id}", response_model=List[AssessmentEligibilityResponse])
+def get_eligibility_dropdown(user_id: str, db: Session = Depends(get_db)):
+    return service.get_dropdown_options(db, user_id)
 
-@router.get("/{employee_id}/summary", response_model=List[CourseEligibilitySummary])
-def get_eligibility_summary(employee_id: str, db: Session = Depends(get_db)):
-    return get_dropdown_summary(db, employee_id)
+
+@router.get("/{user_id}/summary", response_model=List[CourseEligibilitySummary])
+def get_eligibility_summary(user_id: str, db: Session = Depends(get_db)):
+    return get_dropdown_summary(db, user_id)

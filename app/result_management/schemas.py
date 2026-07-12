@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class AssessmentResultSummary(BaseModel):
     assessment_id: str
-    employee_id: str
+    user_id: str
     course_id: str
     course_name: str
     status: str
