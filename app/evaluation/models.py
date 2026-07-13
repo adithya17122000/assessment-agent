@@ -16,6 +16,7 @@ class Response(Base):
     answered_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
+
 class Evaluation(Base):
     __tablename__ = "evaluation"
 
@@ -24,4 +25,6 @@ class Evaluation(Base):
     score = Column(Integer, nullable=True)
     total_questions = Column(Integer, nullable=False)
     pass_fail_status = Column(String, nullable=True)
+    weak_topics = Column(JSONB, nullable=True)
+    feedback = Column(String, nullable=True)
     evaluated_at = Column(DateTime(timezone=True), server_default=func.now())

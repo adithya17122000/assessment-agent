@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class AssessmentEligibilityCreate(BaseModel):
-    employee_id: str
+    user_id: str
     employee_name: Optional[str] = None
     course_id: str
     course_name: str
@@ -19,10 +19,11 @@ class CourseEligibilitySummary(BaseModel):
     union_topics: List[str]
     latest_topics: List[str]
     latest_completion_date: str
+    difficulty: Optional[str] = None
 
 class AssessmentEligibilityResponse(BaseModel):
     id: str
-    employee_id: str
+    user_id: str
     course_id: str
     course_name: str
     module_name: Optional[str]
@@ -33,3 +34,16 @@ class AssessmentEligibilityResponse(BaseModel):
 
     class Config:
         from_attributes = True  # Pydantic v2; use orm_mode = True if you're on v1
+
+class EligibilityCreateResponse(BaseModel):
+    message: str
+    eligibility_id: str
+
+class MockTakeAssessmentPayload(BaseModel):
+    user_id: str
+    course_id: str
+    course_name: str
+    module_id: Optional[str] = None
+    module_name: Optional[str] = None
+    topics: List[str]
+    difficulty: str

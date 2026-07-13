@@ -6,7 +6,7 @@ from app.question_generation.schemas import QuestionForFrontend
 
 
 class TakeAssessmentRequest(BaseModel):
-    employee_id: str
+    user_id: str
     course_id: str
     course_name: str
     module_id: Optional[str] = None
@@ -17,7 +17,7 @@ class TakeAssessmentRequest(BaseModel):
 
 class AssessmentRequestResponse(BaseModel):
     id: str
-    employee_id: str
+    user_id: str
     course_id: str
     course_name: str
     module_id: Optional[str]

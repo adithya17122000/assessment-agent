@@ -12,5 +12,6 @@ class Question(Base):
     sequence_number = Column(Integer, nullable=False)  
     question_text = Column(String, nullable=False)
     question_type = Column(String, nullable=False, default="MCQ")
+    topic = Column(String, nullable=False)
     options = Column(JSONB, nullable=False)         
     correct_answer = Column(JSONB, nullable=False)  

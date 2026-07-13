@@ -25,7 +25,6 @@ def get_generation_context(db: Session, assessment_id: str) -> AssessmentRequest
 
 
 def generate_questions_for_assessment(db: Session, assessment_id: str, question_count: int = 10) -> list[Question]:
-    
     existing = db.query(Question).filter(Question.assessment_id == assessment_id).all()
     if existing:
         return existing
@@ -50,6 +49,7 @@ def generate_questions_for_assessment(db: Session, assessment_id: str, question_
             sequence_number=i,
             question_text=q["question"],
             question_type="MCQ",
+            topic=q["topic"],
             options=q["options"],
             correct_answer=q["correct_answer"],
         )
@@ -61,3 +61,16 @@ def generate_questions_for_assessment(db: Session, assessment_id: str, question_
 
 def get_questions_for_frontend(db: Session, assessment_id: str):
     return get_questions_by_assessment(db, assessment_id)
+
+def build_mock_submission_payload(db: Session, assessment_id: str) -> dict:
+    questions = get_questions_by_assessment(db, assessment_id)
+    if not questions:
+        raise ValueError(f"No questions found for assessment_id={assessment_id}")
+
+    return {
+        "assessment_id": assessment_id,
+        "answers": [
+            {"question_id": q.id, "submitted_answer": q.correct_answer}
+            for q in questions
+        ],
+    }
