@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from app.evaluation import helper
 from app.evaluation.models import Evaluation, Response
 from app.evaluation.helper import is_answer_correct
-from app.evaluation.schemas import BulkResponseSubmission
+from app.evaluation.schemas import AssessmentReview, BulkResponseSubmission, AnswerReview
 from app.question_generation.models import Question
 from app.question_generation.llm_client import call_llm
 from app.config.settings import PASS_THRESHOLD_PERCENT
@@ -86,3 +86,36 @@ def generate_feedback(score_percent: float, weak_topics: list[str], pass_fail_st
         return raw.strip()[:150]  # defensive truncation regardless of what LLM actually returns
     except Exception:
         return None 
+    
+def get_assessment_review(db: Session, assessment_id: str) -> AssessmentReview:
+    evaluation = db.query(Evaluation).filter(Evaluation.assessment_id == assessment_id).first()
+    if not evaluation:
+        raise ValueError(f"No evaluation found for assessment_id={assessment_id} — assessment not yet submitted.")
+
+    responses = db.query(Response).filter(Response.assessment_id == assessment_id).all()
+    questions = db.query(Question).filter(Question.assessment_id == assessment_id).all()
+    evaluation = db.query(Evaluation).filter(Evaluation.assessment_id == assessment_id).first()
+
+    question_lookup = {q.id: q for q in questions}
+
+    answer_reviews = []
+    for response in responses:
+        question = question_lookup.get(response.question_id)
+        if not question:
+            continue
+        answer_reviews.append(AnswerReview(
+            question_id=question.id,
+            question_text=question.question_text,
+            options=question.options,
+            submitted_answer=response.submitted_answer,
+            correct_answer=question.correct_answer,
+            is_correct=is_answer_correct(response.submitted_answer, question.correct_answer),
+        ))
+
+    return AssessmentReview(
+        assessment_id=assessment_id,
+        score=evaluation.score,
+        total_questions=evaluation.total_questions,
+        pass_fail_status=evaluation.pass_fail_status,
+        answers=answer_reviews,
+    )

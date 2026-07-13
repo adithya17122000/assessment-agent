@@ -23,3 +23,20 @@ class EvaluationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AnswerReview(BaseModel):
+    question_id: str
+    question_text: str
+    options: dict
+    submitted_answer: List[str]
+    correct_answer: List[str]
+    is_correct: bool
+
+
+class AssessmentReview(BaseModel):
+    assessment_id: str
+    score: int
+    total_questions: int
+    pass_fail_status: str
+    answers: List[AnswerReview]
