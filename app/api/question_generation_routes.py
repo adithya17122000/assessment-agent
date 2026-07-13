@@ -9,6 +9,8 @@ from app.question_generation.service import generate_questions_for_assessment
 from app.question_generation.helper import QuestionParseError
 from app.question_generation.schemas import QuestionForFrontend
 from app.question_generation.service import get_questions_for_frontend
+from app.question_generation.schemas import MockSubmissionPayload
+from app.question_generation.service import build_mock_submission_payload
 
 
 router = APIRouter(prefix="/question-generation", tags=["Question Generation"])
@@ -30,3 +32,7 @@ def get_questions(assessment_id: str, db: Session = Depends(get_db)):
     if not questions:
         raise HTTPException(status_code=404, detail=f"No questions found for assessment_id={assessment_id}")
     return questions
+
+@router.get("/{assessment_id}/mock-submission", response_model=MockSubmissionPayload)
+def get_mock_submission(assessment_id: str, db: Session = Depends(get_db)):
+    return build_mock_submission_payload(db, assessment_id)

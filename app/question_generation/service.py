@@ -61,3 +61,16 @@ def generate_questions_for_assessment(db: Session, assessment_id: str, question_
 
 def get_questions_for_frontend(db: Session, assessment_id: str):
     return get_questions_by_assessment(db, assessment_id)
+
+def build_mock_submission_payload(db: Session, assessment_id: str) -> dict:
+    questions = get_questions_by_assessment(db, assessment_id)
+    if not questions:
+        raise ValueError(f"No questions found for assessment_id={assessment_id}")
+
+    return {
+        "assessment_id": assessment_id,
+        "answers": [
+            {"question_id": q.id, "submitted_answer": q.correct_answer}
+            for q in questions
+        ],
+    }

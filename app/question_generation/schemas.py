@@ -29,3 +29,13 @@ class QuestionForFrontend(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MockAnswerEntry(BaseModel):
+    question_id: str
+    submitted_answer: List[str]
+
+
+class MockSubmissionPayload(BaseModel):
+    assessment_id: str
+    answers: List[MockAnswerEntry]

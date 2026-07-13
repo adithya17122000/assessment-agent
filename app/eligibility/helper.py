@@ -1,6 +1,6 @@
 import uuid
 from collections import defaultdict
-
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.eligibility.models import AssessmentEligibility
@@ -23,15 +23,13 @@ def create_eligibility(db: Session, payload: AssessmentEligibilityCreate):
         db.add(record)
         db.commit()
         db.refresh(record)
-        msg = f"Eligibility record created for user_id={payload.user_id}, course_id={payload.course_id}"
         return {
-            "message": msg,
+            "message": f"Eligibility record created for user_id={payload.user_id}, course_id={payload.course_id}",
             "eligibility_id": record.id,
         }
     except Exception as e:
         db.rollback()
-        raise e
-
+        raise HTTPException(status_code=500, detail=f"Failed to create eligibility record: {str(e)}")
 
 def get_eligibility_by_user(db: Session, user_id: str):
     return (
@@ -65,6 +63,7 @@ def get_eligibility_summary_by_user(db: Session, user_id: str):
                 union_topics=sorted(union_set),
                 latest_topics=latest_row.topics,
                 latest_completion_date=str(latest_row.completion_date),
+                difficulty=latest_row.difficulty
             )
         )
 
