@@ -1,4 +1,3 @@
-# app/assessment_management/helper.py
 import uuid
 from sqlalchemy.orm import Session
 

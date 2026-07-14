@@ -1,4 +1,3 @@
-# app/evaluation/schemas.py — complete file, all three classes
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel

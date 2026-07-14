@@ -1,4 +1,3 @@
-# app/assessment_management/service.py
 from sqlalchemy.orm import Session
 
 from app.assessment_management import helper

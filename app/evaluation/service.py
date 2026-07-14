@@ -1,4 +1,3 @@
-# app/evaluation/service.py — final combined version
 import uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -10,8 +9,8 @@ from app.evaluation.schemas import AssessmentReview, BulkResponseSubmission, Ans
 from app.question_generation.models import Question
 from app.question_generation.llm_client import call_llm
 from app.config.settings import PASS_THRESHOLD_PERCENT
-from app.assessment_management.models import Assessment
-
+from app.assessment_management.models import Assessment, AssessmentRequest
+from app.evaluation.team3_webhook import notify_team3_quiz_result
 
 def submit_and_evaluate(db: Session, payload: BulkResponseSubmission) -> Evaluation:
     # Step 1: bulk insert raw responses
@@ -63,6 +62,25 @@ def evaluate_assessment(db: Session, assessment_id: str) -> Evaluation:
 
     db.commit()
     db.refresh(evaluation)
+    # Api call to team 3 
+    try:
+        request = db.query(AssessmentRequest).filter(AssessmentRequest.id == assessment.request_id).first()
+        if request:
+            notify_team3_quiz_result(
+                user_id=request.user_id,
+                course_id=request.course_id,
+                course_name=request.course_name,
+                assessment_id=assessment_id,
+                score=evaluation.score,
+                pass_threshold=int(PASS_THRESHOLD_PERCENT),
+                pass_fail_status=evaluation.pass_fail_status,
+                feedback=evaluation.feedback,
+                weak_topics=evaluation.weak_topics,
+                attempted_on=str(assessment.submitted_at),
+            )
+    except Exception as e:
+        print(f"Failed to notify Team 3: {e}")
+
     return evaluation
 
 def build_feedback_prompt(score_percent: float, weak_topics: list[str], pass_fail_status: str) -> str:

@@ -1,14 +1,12 @@
-# app/api/question_generation_routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
 from app.config.database import get_db
-from app.question_generation.schemas import QuestionGenerationRequest, QuestionResponse
-from app.question_generation.service import generate_questions_for_assessment
+from app.question_generation.schemas import QuestionGenerationRequest, QuestionResponse, QuestionForFrontend
+from app.question_generation.service import generate_questions_for_assessment, get_questions_for_frontend
 from app.question_generation.helper import QuestionParseError
-from app.question_generation.schemas import QuestionForFrontend
-from app.question_generation.service import get_questions_for_frontend
+
 from app.question_generation.schemas import MockSubmissionPayload
 from app.question_generation.service import build_mock_submission_payload
 
