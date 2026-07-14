@@ -1,29 +1,49 @@
+# app/result_management/schemas.py — add these
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
-from typing import List
 
 
-class AssessmentResultSummary(BaseModel):
+class EmployeeAssessmentSummary(BaseModel):
     assessment_id: str
-    user_id: str
     course_id: str
-    course_name: str
+    course: str
+    last_score: Optional[int]
+    pass_threshold: int
     status: str
+
+
+class EmployeeAssessmentsResponse(BaseModel):
+    user_id: str
+    assessments: List[EmployeeAssessmentSummary]
+    pagination: dict
+
+
+class AssessmentAttemptEntry(BaseModel):
+    assessment_id: str
+    course_id: str
+    course: str
     score: Optional[int]
-    total_questions: Optional[int]
-    pass_fail_status: Optional[str]
-    submitted_at: Optional[datetime]
-
-
-class CourseStatusSummary(BaseModel):
-    course_id: str
-    course_name: str
     status: str
-    pass_fail_status: Optional[str]
-    attempt_count: int
+    attempted_on: Optional[datetime]
+    feedback: Optional[str]
 
 
-class UserAssessmentStats(BaseModel):
+class EmployeeAssessmentAttemptsResponse(BaseModel):
     user_id: str
-    courses: List[CourseStatusSummary]
+    attempts: List[AssessmentAttemptEntry]
+    pagination: dict
+
+
+class CourseAssessmentAttemptEntry(BaseModel):
+    user_id: str
+    assessment_id: str
+    score: Optional[int]
+    status: str
+    attempted_on: Optional[datetime]
+
+
+class CourseAssessmentAttemptsResponse(BaseModel):
+    course_id: str
+    attempts: List[CourseAssessmentAttemptEntry]
+    pagination: dict
