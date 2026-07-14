@@ -16,7 +16,7 @@ from app.question_generation.service import build_mock_submission_payload
 router = APIRouter(prefix="/question-generation", tags=["Question Generation"])
 
 
-@router.post("/", response_model=List[QuestionResponse])
+# @router.post("/", response_model=List[QuestionResponse])
 def generate_questions(payload: QuestionGenerationRequest, db: Session = Depends(get_db)):
     try:
         return generate_questions_for_assessment(
@@ -26,7 +26,7 @@ def generate_questions(payload: QuestionGenerationRequest, db: Session = Depends
     except QuestionParseError as e:
         raise HTTPException(status_code=502, detail=f"LLM response could not be parsed: {e}")
     
-@router.get("/{assessment_id}", response_model=List[QuestionForFrontend])
+# @router.get("/{assessment_id}", response_model=List[QuestionForFrontend])
 def get_questions(assessment_id: str, db: Session = Depends(get_db)):
     questions = get_questions_for_frontend(db, assessment_id)
     if not questions:
