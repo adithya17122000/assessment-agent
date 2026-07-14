@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.config.database import get_db
-from app.eligibility.schemas import AssessmentEligibilityCreate, AssessmentEligibilityResponse, EligibilityCreateResponse, MockTakeAssessmentPayload
+from app.eligibility.schemas import AssessmentEligibilityCreate, AssessmentEligibilityResponse, EligibilityCreateResponse, MockTakeAssessmentPayload, CourseEligibilitySummary
 from app.eligibility import service
-from app.eligibility.schemas import CourseEligibilitySummary
 from app.eligibility.service import get_dropdown_summary
+
 from app.eligibility.schemas import MockTakeAssessmentPayload
 from app.eligibility.service import build_mock_take_assessment_payload
 

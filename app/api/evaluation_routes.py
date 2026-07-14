@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends
+from fastapi import HTTPException
+
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.evaluation.service import submit_and_evaluate
-from app.evaluation.schemas import BulkResponseSubmission, EvaluationResponse
-from app.evaluation.schemas import AssessmentReview
-from app.evaluation.service import get_assessment_review
-from fastapi import HTTPException
+from app.evaluation.service import submit_and_evaluate, get_assessment_review
+from app.evaluation.schemas import BulkResponseSubmission, EvaluationResponse, AssessmentReview
 
 
 router = APIRouter(prefix="/submit-assessment", tags=["Evaluation"])

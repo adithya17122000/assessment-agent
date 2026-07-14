@@ -1,4 +1,3 @@
-# app/assessment_management/models.py
 from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
