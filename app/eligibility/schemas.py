@@ -9,6 +9,7 @@ class AssessmentEligibilityCreate(BaseModel):
     course_id: str
     course_name: str
     module_name: Optional[str] = None
+    module_id: Optional[str] = None
     topics: List[str]
     difficulty: str
     completion_date: date
@@ -16,17 +17,20 @@ class AssessmentEligibilityCreate(BaseModel):
 class CourseEligibilitySummary(BaseModel):
     course_id: str
     course_name: str
-    union_topics: List[str]
-    latest_topics: List[str]
+    topics: List[str]
+    # latest_topics: List[str]
     latest_completion_date: str
     difficulty: Optional[str] = None
+    module_id: Optional[str] = None
+    module_name: Optional[str] = None
 
 class AssessmentEligibilityResponse(BaseModel):
     id: str
     user_id: str
     course_id: str
     course_name: str
-    module_name: Optional[str]
+    module_id: Optional[str] = None
+    module_name: Optional[str] = None
     topics: List[str]
     difficulty: str
     completion_date: date
