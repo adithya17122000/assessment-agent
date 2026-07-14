@@ -1,41 +1,69 @@
+import uuid
 from sqlalchemy.orm import Session
+
+from app.config.settings import PASS_THRESHOLD_PERCENT
+from app.result_management.schemas import (
+    EmployeeAssessmentSummary, EmployeeAssessmentsResponse,
+    AssessmentAttemptEntry, EmployeeAssessmentAttemptsResponse,
+    CourseAssessmentAttemptEntry, CourseAssessmentAttemptsResponse,
+)
 from app.result_management import helper
-from app.result_management.schemas import AssessmentResultSummary
-from app.result_management.schemas import CourseStatusSummary, UserAssessmentStats
 
-
-def get_user_results(db: Session, user_id: str) -> list[AssessmentResultSummary]:
-    rows = helper.get_results_by_user(db, user_id)
-
-    results = []
-    for assessment, request, evaluation in rows:
-        results.append(
-            AssessmentResultSummary(
-                assessment_id=assessment.id,
-                user_id=request.user_id,
-                course_id=request.course_id,
-                course_name=request.course_name,
-                status=assessment.status,
-                score=evaluation.score if evaluation else None,
-                total_questions=evaluation.total_questions if evaluation else None,
-                pass_fail_status=evaluation.pass_fail_status if evaluation else None,
-                submitted_at=assessment.submitted_at,
-            )
+def get_employee_assessments_response(db: Session, user_id: str, limit: int, offset: int, search: str = None):
+    rows, total = helper.get_employee_assessments(db, user_id, limit, offset, search)
+    assessments = [
+        EmployeeAssessmentSummary(
+            assessment_id=assessment.id,
+            course_id=request.course_id,
+            course=request.course_name,
+            last_score=evaluation.score if evaluation else None,
+            pass_threshold=int(PASS_THRESHOLD_PERCENT),
+            status=(evaluation.pass_fail_status.lower() if evaluation else "pending"),
         )
-    return results
-
-def get_user_stats(db: Session, user_id: str) -> UserAssessmentStats:
-    rows = helper.get_course_status_counts(db, user_id)
-
-    courses = [
-        CourseStatusSummary(
-            course_id=row.course_id,
-            course_name=row.course_name,
-            status=row.status,
-            pass_fail_status=row.pass_fail_status,
-            attempt_count=row.attempt_count,
-        )
-        for row in rows
+        for assessment, request, evaluation in rows
     ]
+    return EmployeeAssessmentsResponse(
+        user_id=user_id,
+        assessments=assessments,
+        pagination={"limit": limit, "offset": offset, "total": total, "has_more": offset + limit < total},
+    )
 
-    return UserAssessmentStats(user_id=user_id, courses=courses)
+
+def get_employee_assessment_attempts_response(db: Session, user_id: str, limit: int, offset: int, search: str = None):
+    rows, total = helper.get_employee_assessment_attempts(db, user_id, limit, offset, search)
+    attempts = [
+        AssessmentAttemptEntry(
+            assessment_id=assessment.id,
+            course_id=request.course_id,
+            course=request.course_name,
+            score=evaluation.score if evaluation else None,
+            status=(evaluation.pass_fail_status.lower() if evaluation else "pending"),
+            attempted_on=assessment.submitted_at,
+            feedback=evaluation.feedback if evaluation else None,
+        )
+        for assessment, request, evaluation in rows
+    ]
+    return EmployeeAssessmentAttemptsResponse(
+        user_id=user_id,
+        attempts=attempts,
+        pagination={"limit": limit, "offset": offset, "total": total, "has_more": offset + limit < total},
+    )
+
+
+def get_course_assessment_attempts_response(db: Session, course_id: str, limit: int, offset: int):
+    rows, total = helper.get_course_assessment_attempts(db, course_id, limit, offset)
+    attempts = [
+        CourseAssessmentAttemptEntry(
+            user_id=request.user_id,
+            assessment_id=assessment.id,
+            score=evaluation.score if evaluation else None,
+            status=(evaluation.pass_fail_status.lower() if evaluation else "pending"),
+            attempted_on=assessment.submitted_at,
+        )
+        for assessment, request, evaluation in rows
+    ]
+    return CourseAssessmentAttemptsResponse(
+        course_id=course_id,
+        attempts=attempts,
+        pagination={"limit": limit, "offset": offset, "total": total, "has_more": offset + limit < total},
+    )
