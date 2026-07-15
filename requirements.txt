@@ -6,3 +6,4 @@ fastapi
 alembic
 openai
 ipdb
+requests
