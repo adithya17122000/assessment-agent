@@ -16,6 +16,6 @@ class AssessmentEligibility(Base):
     module_name = Column(String, nullable=True)
     module_id = Column(String, nullable=True)
     topics = Column(JSONB, nullable=False)
-    difficulty = Column(String, nullable=False)
+    difficulty = Column(String, nullable=False, default="medium")
     completion_date = Column(Date, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

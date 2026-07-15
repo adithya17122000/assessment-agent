@@ -51,3 +51,8 @@ class MockTakeAssessmentPayload(BaseModel):
     module_name: Optional[str] = None
     topics: List[str]
     difficulty: str
+
+
+class EligibilitySummaryResponse(BaseModel):
+    courses: List[CourseEligibilitySummary]
+    message: Optional[str] = None

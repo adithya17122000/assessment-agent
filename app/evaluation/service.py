@@ -84,7 +84,7 @@ def evaluate_assessment(db: Session, assessment_id: str) -> Evaluation:
     return evaluation
 
 def build_feedback_prompt(score_percent: float, weak_topics: list[str], pass_fail_status: str) -> str:
-    if not weak_topics:
+    if pass_fail_status == "Pass" and score_percent == 100:
         return (
             "Write a short, encouraging feedback message (max 150 characters) "
             "for an employee who answered all quiz questions correctly."
@@ -94,6 +94,7 @@ def build_feedback_prompt(score_percent: float, weak_topics: list[str], pass_fai
         f"Write a short feedback message (max 150 characters) for an employee "
         f"who scored {round(score_percent)}% and struggled with these topics: {topics_str}. "
         f"Be constructive, not harsh. Return ONLY the feedback sentence, no extra text."
+        f"Do not use something like lets workout together or anything in that context."
     )
 
 

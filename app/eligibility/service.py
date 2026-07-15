@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.eligibility import helper
-from app.eligibility.schemas import AssessmentEligibilityCreate
+from app.eligibility.schemas import AssessmentEligibilityCreate, EligibilitySummaryResponse
 
 
 def record_eligibility(db: Session, payload: AssessmentEligibilityCreate):
@@ -11,6 +11,16 @@ def record_eligibility(db: Session, payload: AssessmentEligibilityCreate):
 def get_dropdown_options(db: Session, user_id: str):
     return helper.get_eligibility_by_user(db, user_id)
 
+def get_dropdown_summary_response(db: Session, user_id: str) -> EligibilitySummaryResponse:
+    summaries = get_dropdown_summary(db, user_id)  # existing function, unchanged
+
+    if not summaries:
+        return EligibilitySummaryResponse(
+            courses=[],
+            message="You don't have any completed courses yet. Please take a recommended course and complete a session with the AI tutor to become eligible for an assessment."
+        )
+
+    return EligibilitySummaryResponse(courses=summaries, message=None)
 
 def get_dropdown_summary(db: Session, user_id: str):
     return helper.get_eligibility_summary_by_user(db, user_id)
