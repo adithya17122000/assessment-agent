@@ -106,6 +106,110 @@ uvicorn app.main:app --reload
 
 Open `http://localhost:8000/docs` — confirm all routers are listed (Eligibility, Assessment Management, Question Generation, Evaluation, Result Management, Take Assessment orchestration).
 
+## Database Schema
+
+### assessment_eligibility
+Source of truth for course/module completions reported by Team 3. Insert-only — never updated or deleted.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| user_id | string | No | Indexed. References Team 1's employee identity — not a local FK. |
+| employee_name | string | Yes | Optional, for display convenience only. |
+| course_id | string | No | Indexed. |
+| course_name | string | No | |
+| module_id | string | Yes | Informational only — not used in grouping/aggregation. |
+| module_name | string | Yes | Informational only. |
+| topics | JSONB | No | List of topics covered in this completion event. |
+| difficulty | string | No | Defaults to `"medium"` if not provided. |
+| completion_date | date | No | |
+| created_at | timestamptz | No | Auto-set on insert. |
+
+---
+
+### assessment_request
+Created when a user clicks "Take Assessment." Snapshot of course/topic metadata at request time.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| user_id | string | No | Indexed. |
+| course_id | string | No | Indexed. |
+| course_name | string | No | |
+| module_id | string | Yes | |
+| module_name | string | Yes | |
+| topics | JSONB | No | Aggregated topic set (union or latest, per user's choice at request time). |
+| difficulty | string | No | |
+| request_timestamp | timestamptz | No | Auto-set on insert. |
+
+---
+
+### assessment
+One row per "take" — no retry/attempt tracking; every take is an independent execution.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| request_id | string (FK → assessment_request.id) | No | Indexed. |
+| status | string | No | `"In Progress"` / `"Completed"`. Default `"In Progress"`. |
+| question_count | integer | No | Always `10`, regardless of any value Team 3 sends. |
+| started_at | timestamptz | No | Auto-set on insert. |
+| submitted_at | timestamptz | Yes | Set when evaluation completes. |
+
+---
+
+### question
+Generated once per assessment via LLM. Not reused across assessments — no question bank.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| assessment_id | string | No | Indexed. **No FK constraint** (known gap — see below). |
+| sequence_number | integer | No | Question order, 1–10. |
+| question_text | string | No | |
+| question_type | string | No | Defaults to `"MCQ"` — not currently distinguished for boolean/multi-select. |
+| topic | string | No | One of the topics from the originating request — used to compute weak_topics. |
+| options | JSONB | No | Dict with keys `a`–`d` (or `a`/`b` for boolean). |
+| correct_answer | JSONB | No | List of correct option keys — always a list, even for single-answer questions. |
+
+---
+
+### response
+Bulk-inserted at submit time — all answers for an assessment arrive in one request.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| question_id | string (FK → question.id) | No | Indexed. |
+| assessment_id | string (FK → assessment.id) | No | Indexed. Denormalized — also derivable via question_id → question.assessment_id. |
+| submitted_answer | JSONB | No | List of selected option keys. |
+| answered_at | timestamptz | No | Auto-set on insert. Redundant across all rows in one submission (kept intentionally). |
+
+**Note:** `submitted_answer` correctness is never stored here — computed only once, at evaluation time.
+
+---
+
+### evaluation
+One row per completed assessment. Computed once at submit time, never recalculated.
+
+| Column | Type | Nullable | Notes |
+|---|---|---|---|
+| id | string (PK) | No | |
+| assessment_id | string | No | Indexed. **No FK constraint** (known gap — see below). |
+| score | integer | Yes | Count of correctly answered questions. |
+| total_questions | integer | No | |
+| pass_fail_status | string | Yes | `"Pass"` / `"Fail"`, based on `PASS_THRESHOLD_PERCENT` (configurable, default 60%). |
+| weak_topics | JSONB | Yes | Topics behind incorrectly answered questions. Empty if all correct. |
+| feedback | string | Yes | AI-generated, ~150 char max. Best-effort — `null` if generation fails. |
+| evaluated_at | timestamptz | No | Auto-set on insert. |
+
+---
+
+### Known Schema Gaps
+
+- **No foreign key constraints** on `question.assessment_id`, `response.assessment_id`, or `evaluation.assessment_id` — only indexed. Referential integrity is not enforced at the database level for these; queries and joins work correctly regardless, but orphaned rows are possible in theory. Left as-is deliberately.
+- **No migration tool** — schema changes require manual `ALTER`/drop-recreate. `create_tables.py` only creates tables that don't yet exist; it does not apply changes to existing tables.
+
 ## Notes
 
 - Tables are created via `create_tables.py` (`Base.metadata.create_all`) — there is no migration tool in place. Any future schema change to an existing table with real data requires a manual `ALTER` or a drop-and-recreate; there is no automated migration path yet.
