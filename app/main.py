@@ -9,6 +9,13 @@ from app.api.evaluation_routes import router as evaluation_router
 
 app = FastAPI(title="Team 4 - Assessment Service", debug=True)
 
+@app.get("/")
+def root():
+    return {
+        "service": "Team 4 - AI Assessment & Quiz Service",
+        "description": "Handles assessment eligibility, AI-driven question generation, evaluation, and results for the learning platform.",
+        "docs": "/docs",
+    }
 
 app.include_router(eligibility_router, prefix="/assessment")
 app.include_router(assessment_router, prefix="/assessment")

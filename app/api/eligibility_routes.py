@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.config.database import get_db
-from app.eligibility.schemas import AssessmentEligibilityCreate, AssessmentEligibilityResponse, EligibilityCreateResponse, MockTakeAssessmentPayload, CourseEligibilitySummary
+from app.eligibility.schemas import AssessmentEligibilityCreate, AssessmentEligibilityResponse, EligibilityCreateResponse, MockTakeAssessmentPayload, CourseEligibilitySummary, EligibilitySummaryResponse
 from app.eligibility import service
-from app.eligibility.service import get_dropdown_summary
+from app.eligibility.service import get_dropdown_summary_response
 from app.config.auth import verify_service_token
 
 from app.eligibility.schemas import MockTakeAssessmentPayload
@@ -22,9 +22,9 @@ def create_eligibility(payload: AssessmentEligibilityCreate, db: Session = Depen
 def get_eligibility_dropdown(user_id: str, db: Session = Depends(get_db)):
     return service.get_dropdown_options(db, user_id)
 
-@router.get("/{user_id}/summary", response_model=List[CourseEligibilitySummary])
+@router.get("/{user_id}/summary", response_model=EligibilitySummaryResponse)
 def get_eligibility_summary(user_id: str, db: Session = Depends(get_db)):
-    return get_dropdown_summary(db, user_id)
+    return get_dropdown_summary_response(db, user_id)
 
 @router.get("/{user_id}/mock-take-assessment", response_model=MockTakeAssessmentPayload)
 def get_mock_take_assessment(user_id: str, db: Session = Depends(get_db)):
