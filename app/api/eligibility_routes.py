@@ -6,6 +6,7 @@ from app.config.database import get_db
 from app.eligibility.schemas import AssessmentEligibilityCreate, AssessmentEligibilityResponse, EligibilityCreateResponse, MockTakeAssessmentPayload, CourseEligibilitySummary
 from app.eligibility import service
 from app.eligibility.service import get_dropdown_summary
+from app.config.auth import verify_service_token
 
 from app.eligibility.schemas import MockTakeAssessmentPayload
 from app.eligibility.service import build_mock_take_assessment_payload
@@ -13,7 +14,7 @@ from app.eligibility.service import build_mock_take_assessment_payload
 router = APIRouter(prefix="/eligibility", tags=["Eligibility"])
 
 
-@router.post("/", response_model=EligibilityCreateResponse)
+@router.post("/", response_model=EligibilityCreateResponse, dependencies=[Depends(verify_service_token)])
 def create_eligibility(payload: AssessmentEligibilityCreate, db: Session = Depends(get_db)):
     return service.record_eligibility(db, payload)
 
