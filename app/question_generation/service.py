@@ -43,12 +43,13 @@ def generate_questions_for_assessment(db: Session, assessment_id: str, question_
 
     question_rows = []
     for i, q in enumerate(parsed_questions, start=1):
+        question_type = "MSQ" if len(q["correct_answer"]) > 1 else "MCQ"
         row = Question(
             id=f"q-{uuid.uuid4().hex[:8]}",
             assessment_id=assessment_id,
             sequence_number=i,
             question_text=q["question"],
-            question_type="MCQ",
+            question_type=question_type,
             topic=q["topic"],
             options=q["options"],
             correct_answer=q["correct_answer"],

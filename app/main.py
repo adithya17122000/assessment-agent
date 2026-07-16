@@ -6,8 +6,17 @@ from app.api.orchestration_routes import router as orchestration_router
 from app.api.result_routes import router as result_router
 from app.api.evaluation_routes import router as evaluation_router
 
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Team 4 - Assessment Service", debug=True)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # exact frontend origin(s)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
