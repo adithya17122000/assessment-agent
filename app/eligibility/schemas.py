@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class AssessmentEligibilityCreate(BaseModel):
     user_id: str
-    employee_name: Optional[str] = None
+    user_name: Optional[str] = None
     course_id: str
     course_name: str
     module_name: Optional[str] = None

@@ -115,7 +115,7 @@ Source of truth for course/module completions reported by Team 3. Insert-only �
 |---|---|---|---|
 | id | string (PK) | No | |
 | user_id | string | No | Indexed. References Team 1's employee identity — not a local FK. |
-| employee_name | string | Yes | Optional, for display convenience only. |
+| user_name | string | Yes | Optional, for display convenience only. |
 | course_id | string | No | Indexed. |
 | course_name | string | No | |
 | module_id | string | Yes | Informational only — not used in grouping/aggregation. |

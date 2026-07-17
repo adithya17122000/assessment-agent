@@ -10,7 +10,7 @@ class AssessmentEligibility(Base):
 
     id = Column(String, primary_key=True)
     user_id = Column(String, nullable=False, index=True)
-    employee_name = Column(String, nullable=True)
+    user_name = Column(String, nullable=True)
     course_id = Column(String, nullable=False, index=True)
     course_name = Column(String, nullable=False)
     module_name = Column(String, nullable=True)

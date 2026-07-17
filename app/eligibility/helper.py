@@ -12,7 +12,7 @@ def create_eligibility(db: Session, payload: AssessmentEligibilityCreate):
         record = AssessmentEligibility(
             id=f"elig-{uuid.uuid4().hex[:8]}",
             user_id=payload.user_id,
-            employee_name=payload.employee_name,
+            user_name=payload.user_name,
             course_id=payload.course_id,
             course_name=payload.course_name,
             module_name=payload.module_name,
