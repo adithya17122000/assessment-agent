@@ -122,6 +122,8 @@ def get_assessment_review(db: Session, assessment_id: str) -> AssessmentReview:
         question = question_lookup.get(response.question_id)
         if not question:
             continue
+        correct_answer_list= [question.options[x] for x in question.correct_answer]
+
         answer_reviews.append(AnswerReview(
             question_id=question.id,
             question_text=question.question_text,
@@ -129,6 +131,7 @@ def get_assessment_review(db: Session, assessment_id: str) -> AssessmentReview:
             submitted_answer=response.submitted_answer,
             correct_answer=question.correct_answer,
             is_correct=is_answer_correct(response.submitted_answer, question.correct_answer),
+            correct_answer_list=correct_answer_list
         ))
 
     return AssessmentReview(

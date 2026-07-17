@@ -31,6 +31,7 @@ class AnswerReview(BaseModel):
     submitted_answer: List[str]
     correct_answer: List[str]
     is_correct: bool
+    correct_answer_list: List[str]
 
 
 class AssessmentReview(BaseModel):
