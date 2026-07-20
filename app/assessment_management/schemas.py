@@ -49,3 +49,16 @@ class TakeAssessmentResponse(BaseModel):
 class TakeAssessmentAndQuestionsResponse(BaseModel):
     assessment_id: str
     questions: List[QuestionForFrontend]
+
+class CourseAssessmentHistory(BaseModel):
+    course_id: str
+    course: str
+    status: str
+    attempts: int
+    latest_assessment_id: str
+    last_score: Optional[int] = None
+
+
+class CourseAssessmentHistoryResponse(BaseModel):
+    user_id: str
+    assessments: List[CourseAssessmentHistory]

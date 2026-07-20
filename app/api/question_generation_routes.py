@@ -31,6 +31,6 @@ def get_questions(assessment_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"No questions found for assessment_id={assessment_id}")
     return questions
 
-@router.get("/{assessment_id}/mock-submission", response_model=MockSubmissionPayload)
+# @router.get("/{assessment_id}/mock-submission", response_model=MockSubmissionPayload)
 def get_mock_submission(assessment_id: str, db: Session = Depends(get_db)):
     return build_mock_submission_payload(db, assessment_id)

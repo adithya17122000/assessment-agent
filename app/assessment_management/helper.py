@@ -1,9 +1,10 @@
 import uuid
 from sqlalchemy.orm import Session
+from sqlalchemy import func, and_
 
 from app.assessment_management.models import Assessment, AssessmentRequest
 from app.assessment_management.schemas import TakeAssessmentRequest
-
+from app.evaluation.models import Evaluation
 
 def create_assessment_request(db: Session, payload: TakeAssessmentRequest) -> AssessmentRequest:
     record = AssessmentRequest(
@@ -37,3 +38,48 @@ def create_assessment(db: Session, request_id: str) -> Assessment:
 
 def get_assessment_by_id(db: Session, assessment_id: str) -> Assessment:
     return db.query(Assessment).filter(Assessment.id == assessment_id).first()
+
+def assessment_history(db: Session, user_id: str):
+    query = (
+        db.query(
+            AssessmentRequest.course_id.label("course_id"),
+            AssessmentRequest.course_name.label("course_name"),
+            AssessmentRequest.user_id.label("user_id"),
+            Assessment.status.label("status"),
+            Assessment.started_at.label("started_at"),
+            Assessment.id.label("assessment_id"),
+            Evaluation.score.label("latest_score"),
+        )
+        .join(
+            Assessment,
+            Assessment.request_id == AssessmentRequest.id,
+        )
+        .outerjoin(
+            Evaluation,
+            Evaluation.assessment_id == Assessment.id,
+        )
+        .filter(
+            AssessmentRequest.user_id == user_id
+        )
+    )
+
+    
+    rows = query.order_by(Assessment.started_at.desc()).all()
+    aggregated = {}
+    for row in rows:
+        key = (row.course_id, row.status)
+
+        if key not in aggregated:
+            aggregated[key] = {
+                "course_id": row.course_id,
+                "course": row.course_name,
+                "status": row.status,
+                "attempts": 1,
+                "latest_assessment_id": row.assessment_id,
+                "last_score": row.latest_score,
+            }
+        else:
+            aggregated[key]["attempts"] += 1
+
+    return list(aggregated.values())
+    

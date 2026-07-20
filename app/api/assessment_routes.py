@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.assessment_management.schemas import TakeAssessmentRequest, TakeAssessmentResponse, AssessmentResponse
+from app.assessment_management.schemas import TakeAssessmentRequest, TakeAssessmentResponse, AssessmentResponse, CourseAssessmentHistoryResponse
 from app.assessment_management import service
 
 router = APIRouter(prefix="/assessments", tags=["Assessment Management"])
@@ -23,3 +23,7 @@ def get_assessment(assessment_id: str, db: Session = Depends(get_db)):
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not found")
     return assessment
+
+@router.get("/{user_id}/history", response_model=CourseAssessmentHistoryResponse)
+def get_assessment_history(user_id: str, db: Session = Depends(get_db)):
+    return service.get_assessment_history(db, user_id)

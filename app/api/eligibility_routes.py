@@ -26,6 +26,6 @@ def get_eligibility_dropdown(user_id: str, db: Session = Depends(get_db)):
 def get_eligibility_summary(user_id: str, db: Session = Depends(get_db)):
     return get_dropdown_summary_response(db, user_id)
 
-@router.get("/{user_id}/mock-take-assessment", response_model=MockTakeAssessmentPayload)
+# @router.get("/{user_id}/mock-take-assessment", response_model=MockTakeAssessmentPayload)
 def get_mock_take_assessment(user_id: str, db: Session = Depends(get_db)):
     return build_mock_take_assessment_payload(db, user_id)
