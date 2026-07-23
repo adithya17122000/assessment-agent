@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from app.utils.time_logger_utils import timeit
 
 load_dotenv()
 
@@ -10,6 +11,7 @@ MODEL = os.getenv("MODEL")
 
 client = OpenAI(base_url=AI_API_URL, api_key=AI_API_KEY)
 
+@timeit()
 def call_llm(prompt: str) -> str:
     completion = client.chat.completions.create(
         model=MODEL,
