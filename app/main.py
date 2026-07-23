@@ -1,3 +1,4 @@
+from app.utils import log_handler
 from fastapi import FastAPI
 from app.api.eligibility_routes import router as eligibility_router
 from app.api.assessment_routes import router as assessment_router

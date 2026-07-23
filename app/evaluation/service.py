@@ -2,6 +2,7 @@ import uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
+from app.utils.time_logger_utils import timeit
 from app.evaluation import helper
 from app.evaluation.models import Evaluation, Response
 from app.evaluation.helper import is_answer_correct
@@ -97,7 +98,7 @@ def build_feedback_prompt(score_percent: float, weak_topics: list[str], pass_fai
         f"Do not use something like lets workout together or anything in that context."
     )
 
-
+@timeit("Feedback generator")
 def generate_feedback(score_percent: float, weak_topics: list[str], pass_fail_status: str) -> str:
     prompt = build_feedback_prompt(score_percent, weak_topics, pass_fail_status)
     try:

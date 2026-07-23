@@ -5,7 +5,7 @@ from app.question_generation.models import Question
 from app.question_generation.helper import build_question_prompt, get_questions_by_assessment, parse_llm_response
 from app.question_generation.llm_client import call_llm
 from app.assessment_management.models import Assessment, AssessmentRequest
-
+from app.utils.time_logger_utils import timeit
 
 def get_generation_context(db: Session, assessment_id: str) -> AssessmentRequest:
     """
@@ -23,7 +23,7 @@ def get_generation_context(db: Session, assessment_id: str) -> AssessmentRequest
 
     return request
 
-
+@timeit("Question generator")
 def generate_questions_for_assessment(db: Session, assessment_id: str, question_count: int = 10) -> list[Question]:
     existing = db.query(Question).filter(Question.assessment_id == assessment_id).all()
     if existing:

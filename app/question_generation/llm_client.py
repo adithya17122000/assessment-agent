@@ -11,7 +11,6 @@ MODEL = os.getenv("MODEL")
 
 client = OpenAI(base_url=AI_API_URL, api_key=AI_API_KEY)
 
-@timeit()
 def call_llm(prompt: str) -> str:
     completion = client.chat.completions.create(
         model=MODEL,

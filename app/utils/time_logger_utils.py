@@ -13,11 +13,16 @@ def timeit(name=None):
                 return func(*args, **kwargs)
             finally:
                 elapsed = time.perf_counter() - start
-                logger.info(
-                    "[PERF] %s took %.2f ms",
-                    name or func.__qualname__,
-                    elapsed * 1000,
-                )
+
+                if elapsed < 1:
+                    duration = f"{elapsed * 1000:.2f} ms"
+                elif elapsed < 60:
+                    duration = f"{elapsed:.2f} sec"
+                else:
+                    mins, secs = divmod(elapsed, 60)
+                    duration = f"{int(mins)} min {secs:.2f} sec"
+
+                logger.info("[PERF] %s took %s", name or func.__qualname__, duration)
 
         return wrapper
     return decorator
